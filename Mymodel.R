@@ -1,17 +1,22 @@
 
+### ---- demo ----
+
 library(Rcpp)
 library(RcppArmadillo)
-Rcpp::sourceCpp("./Mymodel/Specific.cpp",verbose = TRUE, rebuild = TRUE)
-#Rcpp::sourceCpp("./Mymodel/Share.cpp",verbose = TRUE, rebuild = TRUE)
+#Rcpp::sourceCpp("./Mymodel/Specific.cpp",verbose = TRUE, rebuild = TRUE)
+Rcpp::sourceCpp("./Mymodel/Share.cpp",verbose = TRUE, rebuild = TRUE)
 
   # Phenotype Vector y1,y2
   # Gene matrix m1,m2
   g=ncol(m1)
   n1=length(y1)
   n2=length(y2)
-  H1 =  Mymodel_individualcppSpecific(y1=y1,y2=y2,m1=m1,m2=m2,
+
+  H1 =  Mymodel_individualcppShare(y1=y1,y2=y2,m1=m1,m2=m2,
                               tol=1e-5,maxIter=5000)
- 
+ # H1 =  Mymodel_individualcppSpecific(y1=y1,y2=y2,m1=m1,m2=m2,
+ #                             tol=1e-5,maxIter=5000)
+
   loglik0 <- H1$nullloglik_max
   MA1lkvec <- H1$loglkmaxs
   LRT=c()
@@ -23,4 +28,5 @@ Rcpp::sourceCpp("./Mymodel/Specific.cpp",verbose = TRUE, rebuild = TRUE)
   }
   
 listH=list(,loglik0,MA1lkvec,P)
-#each gene's ancestry-specific/shared p value is in P
+#Each gene's ancestry-specific/shared p value is in P
+#Note: Max_k = 2*g in function Mymodel_individualcppSpecific()
