@@ -21,5 +21,5 @@ Rcpp::sourceCpp("./Mymodel/Specific.cpp",verbose = TRUE, rebuild = TRUE)
     P[k]=0.5*pchisq(LRT[k], 1, lower.tail=FALSE)+0.25*pchisq(LRT[k], 2, lower.tail=FALSE)
   }
   
-listH=list(D1,D2,R,muA1,muA2,loglik0,MA1lkvec,P)
-#each gene's ancestry-specific p value is in pi
+listH=list(,loglik0,MA1lkvec,P)
+#each gene's ancestry-specific p value is in P
