@@ -1,8 +1,6 @@
 
 #define ARMA_64BIT_WORD 
 #include <RcppArmadillo.h>
- 
-#include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 
 #include <R.h>
@@ -24,8 +22,8 @@ using namespace std;
 
 #include <armadillo>
 
-//ÒÑÖªM1ºÍM2£¬¹¹Ôìdiag(M1,M2)µÄ·Ö¿é¶Ô½Ç¾ØÕóº¯Êı£º 
-// ·Ö¿é¶Ô½Ç¾ØÕó¹¹Ôìº¯Êı (ÓÅ»¯ÄÚ´æ·ÖÅä)
+//å·²çŸ¥M1å’ŒM2ï¼Œæ„é€ diag(M1,M2)çš„åˆ†å—å¯¹è§’çŸ©é˜µå‡½æ•°ï¼š 
+// åˆ†å—å¯¹è§’çŸ©é˜µæ„é€ å‡½æ•° (ä¼˜åŒ–å†…å­˜åˆ†é…)
 arma::mat construct_block_diag(const arma::mat& M1, const arma::mat& M2) {
     int n1 = M1.n_rows, n2 = M2.n_rows;
     int p1 = M1.n_cols, p2 = M2.n_cols;
@@ -36,13 +34,13 @@ arma::mat construct_block_diag(const arma::mat& M1, const arma::mat& M2) {
 }
  
 arma::mat construct_block(const arma::mat& A, const arma::mat& B, const arma::mat& C, const arma::mat& D){
-    // ´´½¨Áã¾ØÕó¿é 
-    // 2. Ë®Æ½Æ´½Ó£ººÏ²¢ĞĞ·½ÏòÏàÁÚµÄ¾ØÕó 
+    // åˆ›å»ºé›¶çŸ©é˜µå— 
+    // 2. æ°´å¹³æ‹¼æ¥ï¼šåˆå¹¶è¡Œæ–¹å‘ç›¸é‚»çš„çŸ©é˜µ 
     arma::mat Upper = arma::join_horiz(A, B);  // [A | B]
     arma::mat Lower = arma::join_horiz(C, D);  // [C | D]
-    // 3. ´¹Ö±Æ´½Ó£ººÏ²¢ÁĞ·½ÏòµÄ·Ö¿é 
+    // 3. å‚ç›´æ‹¼æ¥ï¼šåˆå¹¶åˆ—æ–¹å‘çš„åˆ†å— 
     arma::mat M = arma::join_vert(Upper, Lower);  // [A B; C D]
-    // ×İÏòÆ´½Ó£º×éºÏÉÏÏÂ²¿·Ö 
+    // çºµå‘æ‹¼æ¥ï¼šç»„åˆä¸Šä¸‹éƒ¨åˆ† 
     return M;
 }
 
@@ -56,21 +54,21 @@ List Mymodel_PXEM_NULL_individualcpp(
 	const int n2,
 	const double tol,
     const int maxIter){     
- // const std::string mode,        // Ä£Ê½£¨null/alternative£©
- // const bool verbose             // µ÷ÊÔÊä³ö 
+ // const std::string mode,        // æ¨¡å¼ï¼ˆnull/alternativeï¼‰
+ // const bool verbose             // è°ƒè¯•è¾“å‡º 
 	int g = M1.n_cols;
 	int N = n1+n2;
-	//²ÎÊı³õÊ¼»¯ 
+	//å‚æ•°åˆå§‹åŒ– 
 	arma::vec D1 = (0.01/g) * arma::ones<arma::vec>(g);
     arma::vec D2 = (0.01/g) * arma::ones<arma::vec>(g);
 	arma::vec R = arma::zeros<arma::vec>(g);
-	double lambda = 1.0;        // lambdaÀ©Õ¹²ÎÊı³õÊ¼Öµ-¹Ì¶¨
-	double sigma2y1 = 1.0; // sd1·½²î
-	double sigma2y2 = 1.0; // sd2·½²î³õ
+	double lambda = 1.0;        // lambdaæ‰©å±•å‚æ•°åˆå§‹å€¼-å›ºå®š
+	double sigma2y1 = 1.0; // sd1æ–¹å·®
+	double sigma2y2 = 1.0; // sd2æ–¹å·®åˆ
 	double sigma2y1_inv = 1.0; 
 	double sigma2y2_inv = 1.0; 
 	 
-    //¶¨ÒåÑ­»·ÖĞÊ¹ÓÃµÄÖĞ¼ä±äÁ¿ 
+    //å®šä¹‰å¾ªç¯ä¸­ä½¿ç”¨çš„ä¸­é—´å˜é‡ 
     arma::mat M1TM1 = M1.t() * M1; 
     arma::mat M2TM2 = M2.t() * M2; 
     arma::mat M1TY1 = M1.t() * Y1; 
@@ -85,19 +83,19 @@ List Mymodel_PXEM_NULL_individualcpp(
 	
 	double Tr1, Tr2, l1, l2, l3, l4, fenmu2, fenmu1, fenzi;
 	
-	//ËÆÈ»Ïà¹Ø±äÁ¿ 
+	//ä¼¼ç„¶ç›¸å…³å˜é‡ 
 	arma::vec loglik(maxIter, fill::zeros);
-    int final_iter; // ¼ÇÂ¼Êµ¼Êµü´ú´ÎÊı
+    int final_iter; // è®°å½•å®é™…è¿­ä»£æ¬¡æ•°
 	
-    double logdet1, sign1,lambda2;                       // ĞĞÁĞÊ½¼ÆËã¸¨Öú±äÁ¿ 
+    double logdet1, sign1,lambda2;                       // è¡Œåˆ—å¼è®¡ç®—è¾…åŠ©å˜é‡ 
 	arma::mat SigmaA;
 	arma::vec muA1,muA2;
 	
 	
-	//Ö÷Ñ­»·
+	//ä¸»å¾ªç¯
 	for (int iter = 1; iter < maxIter; iter ++ ){
       // E-step 
-      // 1. ¸üĞÂºóÑéĞ­·½²î¾ØÕóSigmaA(·Ö¿éĞ­·½²îÕó) 
+      // 1. æ›´æ–°åéªŒåæ–¹å·®çŸ©é˜µSigmaA(åˆ†å—åæ–¹å·®é˜µ) 
       //------------------
       SigmaA_inv_1 = sigma2y1_inv * M1TM1;
       SigmaA_inv_4 = sigma2y2_inv * M2TM2;
@@ -133,22 +131,22 @@ List Mymodel_PXEM_NULL_individualcpp(
                                        SigmaA_inv_2.t(), SigmaA_inv_4);
       
        if(SigmaA_inv.is_sympd()){
-         SigmaA = arma::inv_sympd(SigmaA_inv);  // ¶Ô³ÆÕı¶¨¾ØÕó×¨ÓÃ 
+         SigmaA = arma::inv_sympd(SigmaA_inv);  // å¯¹ç§°æ­£å®šçŸ©é˜µä¸“ç”¨ 
          } else {
         cout << "***** SigmaA PINV *********************************************" << endl;
-        SigmaA = arma::inv(SigmaA_inv, arma::inv_opts::allow_approx);  // Î±Äæ´¦Àí²¡Ì¬Çé¿ö arma::inv(SigmaA_inv, arma::inv_opts::allow_approx)
+        SigmaA = arma::inv(SigmaA_inv, arma::inv_opts::allow_approx);  // ä¼ªé€†å¤„ç†ç—…æ€æƒ…å†µ arma::inv(SigmaA_inv, arma::inv_opts::allow_approx)
         } 
         
-      arma::mat SigmaA_1 = SigmaA.submat(0,  0, g-1, g-1);    // ×óÉÏ¿é
-      arma::mat SigmaA_2 = SigmaA.submat(0,  g, g-1, 2*g-1);  // ÓÒÉÏ¿é
-      arma::mat SigmaA_3 = SigmaA_2.t();                      // ×óÏÂ¿é
-      arma::mat SigmaA_4 = SigmaA.submat(g,  g, 2*g-1, 2*g-1);// ÓÒÏÂ¿é 
+      arma::mat SigmaA_1 = SigmaA.submat(0,  0, g-1, g-1);    // å·¦ä¸Šå—
+      arma::mat SigmaA_2 = SigmaA.submat(0,  g, g-1, 2*g-1);  // å³ä¸Šå—
+      arma::mat SigmaA_3 = SigmaA_2.t();                      // å·¦ä¸‹å—
+      arma::mat SigmaA_4 = SigmaA.submat(g,  g, 2*g-1, 2*g-1);// å³ä¸‹å— 
       
- 	  // 2. ¸üĞÂºóÑé¾ùÖµmuA(·Ö¿é¾ùÖµ) 
+ 	  // 2. æ›´æ–°åéªŒå‡å€¼muA(åˆ†å—å‡å€¼) 
 	  muA1 = sigma2y1_inv * SigmaA_1 * M1TY1 + sigma2y2_inv * SigmaA_2 * M2TY2; 
 	  muA2 = sigma2y1_inv * SigmaA_3 * M1TY1 + sigma2y2_inv * SigmaA_4 * M2TY2;  
 	  
-	  //¼ÆËã log(¹Û²âËÆÈ»)
+	  //è®¡ç®— log(è§‚æµ‹ä¼¼ç„¶)
 	  arma::log_det(logdet1, sign1, SigmaA);
 	  
 	  l1= arma::as_scalar(muA1.t() * SigmaA_inv_1 * muA1);
@@ -177,21 +175,21 @@ List Mymodel_PXEM_NULL_individualcpp(
      }
 	  
  // M-step
-	  // 1. D1¡¢D2¡¢RµÄ¸üĞÂSigmaa
+	  // 1. D1ã€D2ã€Rçš„æ›´æ–°Sigmaa
 	  for(int i=0; i<g; i++){
 	  	    D1(i) = muA1(i) * muA1(i) + SigmaA_1(i, i);
             D2(i) = muA2(i) * muA2(i) + SigmaA_4(i, i);
             R(i)  = muA1(i) * muA2(i) + SigmaA_2(i, i);
 	  } 
 	
-	  // 3. lambdaµÄ¸üĞÂ 
+	  // 3. lambdaçš„æ›´æ–° 
 	  fenzi = arma::as_scalar(sigma2y1_inv * Y1.t() * M1 * muA1 + sigma2y2_inv * Y2.t() * M2 * muA2);
 	  fenmu1 = sigma2y1_inv * arma::as_scalar( muA1.t() * M1TM1 * muA1 ) + sigma2y2_inv * arma::as_scalar(muA2.t() * M2TM2 * muA2);
 	  fenmu2 = sigma2y1_inv * arma::trace(M1TM1 * SigmaA_1) + sigma2y2_inv * arma::trace(M2TM2 * SigmaA_4);
 	  lambda = fenzi / (fenmu1+fenmu2);
 	  lambda2 = lambda*lambda;
 	  
-	  // 2. SigmayµÄ¸üĞÂ 
+	  // 2. Sigmayçš„æ›´æ–° 
 	  Y1_temp = Y1-lambda*M1*muA1;
 	  Y2_temp = Y2-lambda*M2*muA2;
 	  
@@ -214,7 +212,7 @@ List Mymodel_PXEM_NULL_individualcpp(
 	  loglik_out= loglik.subvec(1,final_iter);
       double loglik_max = loglik(final_iter);
  
-      Rcpp::List res = Rcpp::List::create(         // ·â×°½á¹ûÁĞ±í 
+      Rcpp::List res = Rcpp::List::create(         // å°è£…ç»“æœåˆ—è¡¨ 
     _["muA1"] = muA1,
     _["muA2"] = muA2,
     _["loglik"] = loglik_out,
@@ -233,8 +231,8 @@ List Mymodel_individualcppShare(
     const arma::vec y2, 
     const arma::mat m1, 
     const arma::mat m2,
-    const int maxIter,             // ×î´óµü´ú 
-    const double tol) {            // ÊÕÁ²ÈİÈÌ¶È
+    const int maxIter,             // æœ€å¤§è¿­ä»£ 
+    const double tol) {            // æ”¶æ•›å®¹å¿åº¦
 
     Rcpp::List nullRes, Res, output;
     int gNULL = m1.n_cols;
@@ -249,7 +247,7 @@ List Mymodel_individualcppShare(
  cout<< N1<< endl; 
      
 
-    // ÔËĞĞÁãÄ£ĞÍ£¨ÍêÕûÄ£ĞÍ£©
+    // è¿è¡Œé›¶æ¨¡å‹ï¼ˆå®Œæ•´æ¨¡å‹ï¼‰
     nullRes = Mymodel_PXEM_NULL_individualcpp(y1, y2, m1, m2, N1, N2,tol, maxIter);
      cout<< N2<< endl; 
      
@@ -264,20 +262,20 @@ List Mymodel_individualcppShare(
     
      
 
-    // ´´½¨Ô­Ê¼¾ØÕóµÄ¸±±¾£¬±ÜÃâĞŞ¸ÄÔ­Ê¼Êı¾İ
+    // åˆ›å»ºåŸå§‹çŸ©é˜µçš„å‰¯æœ¬ï¼Œé¿å…ä¿®æ”¹åŸå§‹æ•°æ®
     arma::mat mm1_base = m1;
     arma::mat mm2_base = m2;
 
-    // Öğ¸ö»ùÒò¼ìÑé£¨ÁôÒ»·¨£©
+    // é€ä¸ªåŸºå› æ£€éªŒï¼ˆç•™ä¸€æ³•ï¼‰
     for (int f = 0; f < gNULL; f++) {
     	
     	                   cout<<"f=" << f << endl; 
 
-        // ´Ó¸±±¾´´½¨µ±Ç°µü´úµÄ¾ØÕó
+        // ä»å‰¯æœ¬åˆ›å»ºå½“å‰è¿­ä»£çš„çŸ©é˜µ
         arma::mat mm1 = mm1_base;
         arma::mat mm2 = mm2_base;
 
-        // É¾³ıµÚfÁĞ
+        // åˆ é™¤ç¬¬fåˆ—
         if (f < mm1.n_cols) {
             mm1.shed_col(f); 
         } else {
@@ -290,9 +288,9 @@ List Mymodel_individualcppShare(
         }
 
    
-        // µ÷ÓÃÁãÄ£ĞÍ£¨´ËÊ±ÊÇÉ¾³ıµÚf¸ö»ùÒòºóµÄÄ£ĞÍ£©
+        // è°ƒç”¨é›¶æ¨¡å‹ï¼ˆæ­¤æ—¶æ˜¯åˆ é™¤ç¬¬fä¸ªåŸºå› åçš„æ¨¡å‹ï¼‰
         Res = Mymodel_PXEM_NULL_individualcpp(y1, y2, mm1, mm2, N1, N2,tol, maxIter );
-        // ×¢Òâ£ºÕâÀïÓ¦¸ÃÊÇµ±Ç°Ä£ĞÍResµÄloglik_max£¬¶ø²»ÊÇnullResµÄ
+        // æ³¨æ„ï¼šè¿™é‡Œåº”è¯¥æ˜¯å½“å‰æ¨¡å‹Resçš„loglik_maxï¼Œè€Œä¸æ˜¯nullResçš„
         loglkmaxs(f) = Rcpp::as<double>(Res["loglik_max"]);
     }
 
