@@ -23,7 +23,7 @@ using namespace std;
 #include <armadillo>
 
 //已知M1和M2，构造diag(M1,M2)的分块对角矩阵函数： 
-// 分块对角矩阵构造函数 (优化内存分配)
+// 分块对角矩阵构造函数 , 优化内存分配
 arma::mat construct_block_diag(const arma::mat& M1, const arma::mat& M2) {
     int n1 = M1.n_rows, n2 = M2.n_rows;
     int p1 = M1.n_cols, p2 = M2.n_cols;
