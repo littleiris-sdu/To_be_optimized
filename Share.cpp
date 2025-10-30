@@ -35,12 +35,12 @@ arma::mat construct_block_diag(const arma::mat& M1, const arma::mat& M2) {
  
 arma::mat construct_block(const arma::mat& A, const arma::mat& B, const arma::mat& C, const arma::mat& D){
     // 创建零矩阵块 
-    // 2. 水平拼接：合并行方向相邻的矩阵 
+    //水平拼接
     arma::mat Upper = arma::join_horiz(A, B);  // [A | B]
     arma::mat Lower = arma::join_horiz(C, D);  // [C | D]
-    // 3. 垂直拼接：合并列方向的分块 
+    //垂直拼接
     arma::mat M = arma::join_vert(Upper, Lower);  // [A B; C D]
-    // 纵向拼接：组合上下部分 
+    //纵向拼接
     return M;
 }
 
@@ -68,7 +68,7 @@ List Mymodel_PXEM_NULL_individualcpp(
 	double sigma2y1_inv = 1.0; 
 	double sigma2y2_inv = 1.0; 
 	 
-    //定义循环中使用的中间变量 
+    //循环中使用的中间变量 
     arma::mat M1TM1 = M1.t() * M1; 
     arma::mat M2TM2 = M2.t() * M2; 
     arma::mat M1TY1 = M1.t() * Y1; 
@@ -239,17 +239,17 @@ List Mymodel_individualcppShare(
     
     cout<< gNULL << endl; 
     cout<< m1.n_cols<< endl; 
-     cout<< m2.n_cols<< endl; 
+    cout<< m2.n_cols<< endl; 
     
     arma::vec loglkmaxs = arma::zeros<arma::vec>(maxIter);
     int N1 = y1.n_elem;
     int N2 = y2.n_elem;
- cout<< N1<< endl; 
+    cout<< N1<< endl; 
      
 
     // 运行零模型（完整模型）
     nullRes = Mymodel_PXEM_NULL_individualcpp(y1, y2, m1, m2, N1, N2,tol, maxIter);
-     cout<< N2<< endl; 
+    cout<< N2<< endl; 
      
     arma::vec D1 = Rcpp::as<arma::vec>(nullRes["D1"]);  
     arma::vec D2 = Rcpp::as<arma::vec>(nullRes["D2"]);  
